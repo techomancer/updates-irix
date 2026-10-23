@@ -1,0 +1,90 @@
+--- a/tc.printf.c	2026-10-22 11:21:51.595010086 -0700
++++ b/tc.printf.c	2026-10-22 11:44:49.093061453 -0700
+@@ -278,21 +278,41 @@ doprnt(void (*addchar) (int), const char
+ 			(*addchar) ((int) (pad | attributes));
+ 			count++;
+ 		    }
+-		for (i = 0; *Bp && i < prec; i++) {
+-		    char cbuf[MB_LEN_MAX];
+-		    size_t pos, len;
++		if (prec == INF) {
++		    while (*Bp) {
++			char cbuf[MB_LEN_MAX];
++			size_t pos, len;
+ 
+-		    if (fmt == 'Q' && *Bp & QUOTE) {
+-			(*addchar) ('\\' | attributes);
+-			count++;
++			if (fmt == 'Q' && *Bp & QUOTE) {
++			    (*addchar) ('\\' | attributes);
++			    count++;
++			}
++			len = one_wctomb(cbuf, *Bp);
++			for (pos = 0; pos < len; pos++) {
++			    (*addchar) ((unsigned char)cbuf[pos] | attributes
++					| (*Bp & ATTRIBUTES));
++			    count++;
++			}
++			Bp++;
+ 		    }
+-		    len = one_wctomb(cbuf, *Bp);
+-		    for (pos = 0; pos < len; pos++) {
+-			(*addchar) ((unsigned char)cbuf[pos] | attributes
+-				    | (*Bp & ATTRIBUTES));
+-			count++;
++		}
++		else {
++		    for (i = 0; *Bp && i < prec; i++) {
++			char cbuf[MB_LEN_MAX];
++			size_t pos, len;
++
++			if (fmt == 'Q' && *Bp & QUOTE) {
++			    (*addchar) ('\\' | attributes);
++			    count++;
++			}
++			len = one_wctomb(cbuf, *Bp);
++			for (pos = 0; pos < len; pos++) {
++			    (*addchar) ((unsigned char)cbuf[pos] | attributes
++					| (*Bp & ATTRIBUTES));
++			    count++;
++			}
++			Bp++;
+ 		    }
+-		    Bp++;
+ 		}
+ 		if (flush_left)
+ 		    while (f_width-- > 0) {
+@@ -316,14 +336,27 @@ lcase_s:
+ 			(*addchar) (pad | attributes);
+ 			count++;
+ 		    }
+-		for (i = 0; *bp && i < prec; i++) {
+-		    if (fmt == 'q' && *bp & QUOTE) {
+-			(*addchar) ('\\' | attributes);
++		if (prec == INF) {
++		    while (*bp) {
++			if (fmt == 'q' && *bp & QUOTE) {
++			    (*addchar) ('\\' | attributes);
++			    count++;
++			}
++			(*addchar) (((unsigned char) *bp & TRIM) | attributes);
++			count++;
++			bp++;
++		    }
++		}
++		else {
++		    for (i = 0; *bp && i < prec; i++) {
++			if (fmt == 'q' && *bp & QUOTE) {
++			    (*addchar) ('\\' | attributes);
++			    count++;
++			}
++			(*addchar) (((unsigned char) *bp & TRIM) | attributes);
+ 			count++;
++			bp++;
+ 		    }
+-		    (*addchar) (((unsigned char) *bp & TRIM) | attributes);
+-		    count++;
+-		    bp++;
+ 		}
+ 		if (flush_left)
+ 		    while (f_width-- > 0) {

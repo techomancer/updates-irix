@@ -1,0 +1,26 @@
+[submodule "zlib/zlib"]
+	path = zlib/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "libpng/libpng"]
+	path = libpng/libpng
+	url = https://github.com/pnggroup/libpng.git
+[submodule "libtiff/libtiff"]
+	path = libtiff/libtiff
+	url = https://github.com/libsdl-org/libtiff.git
+[submodule "libjpeg/libjpeg-turbo"]
+	path = libjpeg/libjpeg-turbo
+	url = https://github.com/libjpeg-turbo/libjpeg-turbo.git
+[submodule "openssl-0.9.7/openssl"]
+	path = openssl-0.9.7/openssl
+	url = https://github.com/openssl/openssl.git
+	branch = OpenSSL_0_9_7-stable
+[submodule "openssl-1.1.1/openssl"]
+	path = openssl-1.1.1/openssl
+	url = https://github.com/openssl/openssl.git
+	branch = OpenSSL_1_1_1-stable
+[submodule "openssh/openssh"]
+	path = openssh/openssh
+	url = https://github.com/openssh/openssh-portable.git
+[submodule "tcsh/tcsh"]
+	path = tcsh/tcsh
+	url = https://github.com/tcsh-org/tcsh.git

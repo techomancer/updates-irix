@@ -1,0 +1,7 @@
+*/build/
+dist/
+*.tardist
+__pycache__/
+*.pyc
+openssh/staging/
+.nfs*

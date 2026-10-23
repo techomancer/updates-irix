@@ -1,0 +1,49 @@
+Inconsolata-Regular.pfa -misc-inconsolata-medium-r-normal--0-0-0-0-m-0-iso8859-1
+Inconsolata-Bold.pfa -misc-inconsolata-bold-r-normal--0-0-0-0-m-0-iso8859-1
+Hack-Regular.pfa -source foundry-hack-medium-r-normal--0-0-0-0-m-0-iso8859-1
+Hack-Regular.pfa -misc-hack-medium-r-normal--0-0-0-0-m-0-iso8859-1
+Hack-Bold.pfa -source foundry-hack-bold-r-normal--0-0-0-0-m-0-iso8859-1
+Hack-Bold.pfa -misc-hack-bold-r-normal--0-0-0-0-m-0-iso8859-1
+Hack-Italic.pfa -source foundry-hack-medium-i-normal--0-0-0-0-m-0-iso8859-1
+Hack-Italic.pfa -misc-hack-medium-i-normal--0-0-0-0-m-0-iso8859-1
+Hack-BoldItalic.pfa -source foundry-hack-bold-i-normal--0-0-0-0-m-0-iso8859-1
+Hack-BoldItalic.pfa -misc-hack-bold-i-normal--0-0-0-0-m-0-iso8859-1
+JetBrainsMonoNL-Regular.pfa -jetbrains-jetbrains mono nl-medium-r-normal--0-0-0-0-m-0-iso8859-1
+JetBrainsMonoNL-Bold.pfa -jetbrains-jetbrains mono nl-bold-r-normal--0-0-0-0-m-0-iso8859-1
+JetBrainsMonoNL-Italic.pfa -jetbrains-jetbrains mono nl-medium-i-normal--0-0-0-0-m-0-iso8859-1
+JetBrainsMonoNL-BoldItalic.pfa -jetbrains-jetbrains mono nl-bold-i-normal--0-0-0-0-m-0-iso8859-1
+DroidSansMono.pfa -google-droid sans mono-medium-r-normal--0-0-0-0-m-0-iso8859-1
+DroidSansMonoDotted.pfa -google-droid sans mono dotted-medium-r-normal--0-0-0-0-m-0-iso8859-1
+DroidSansMonoSlashed.pfa -google-droid sans mono slashed-medium-r-normal--0-0-0-0-m-0-iso8859-1
+SourceCodePro-Regular.pfa -adobe-source code pro-medium-r-normal--0-0-0-0-m-0-iso8859-1
+SourceCodePro-Bold.pfa -adobe-source code pro-bold-r-normal--0-0-0-0-m-0-iso8859-1
+SourceCodePro-It.pfa -adobe-source code pro-medium-i-normal--0-0-0-0-m-0-iso8859-1
+SourceCodePro-BoldIt.pfa -adobe-source code pro-bold-i-normal--0-0-0-0-m-0-iso8859-1
+LiberationMono-Regular.pfa -liberation-liberation mono-medium-r-normal--0-0-0-0-m-0-iso8859-1
+LiberationMono-Bold.pfa -liberation-liberation mono-bold-r-normal--0-0-0-0-m-0-iso8859-1
+LiberationMono-Italic.pfa -liberation-liberation mono-medium-i-normal--0-0-0-0-m-0-iso8859-1
+LiberationMono-BoldItalic.pfa -liberation-liberation mono-bold-i-normal--0-0-0-0-m-0-iso8859-1
+Roboto-Regular.pfa -google-roboto-medium-r-normal--0-0-0-0-p-0-iso8859-1
+Roboto-Bold.pfa -google-roboto-bold-r-normal--0-0-0-0-p-0-iso8859-1
+Roboto-Italic.pfa -google-roboto-medium-i-normal--0-0-0-0-p-0-iso8859-1
+Roboto-BoldItalic.pfa -google-roboto-bold-i-normal--0-0-0-0-p-0-iso8859-1
+DroidSans-Regular.pfa -google-droid sans-medium-r-normal--0-0-0-0-p-0-iso8859-1
+DroidSans-Bold.pfa -google-droid sans-bold-r-normal--0-0-0-0-p-0-iso8859-1
+DroidSerif-Regular.pfa -google-droid serif-medium-r-normal--0-0-0-0-p-0-iso8859-1
+DroidSerif-Bold.pfa -google-droid serif-bold-r-normal--0-0-0-0-p-0-iso8859-1
+DroidSerif-Italic.pfa -google-droid serif-medium-i-normal--0-0-0-0-p-0-iso8859-1
+DroidSerif-BoldItalic.pfa -google-droid serif-bold-i-normal--0-0-0-0-p-0-iso8859-1
+SourceSans3-Regular.pfa -adobe-source sans 3-medium-r-normal--0-0-0-0-p-0-iso8859-1
+SourceSans3-Bold.pfa -adobe-source sans 3-bold-r-normal--0-0-0-0-p-0-iso8859-1
+SourceSans3-It.pfa -adobe-source sans 3-medium-i-normal--0-0-0-0-p-0-iso8859-1
+SourceSans3-BoldIt.pfa -adobe-source sans 3-bold-i-normal--0-0-0-0-p-0-iso8859-1
+LiberationSans-Regular.pfa -liberation-liberation sans-medium-r-normal--0-0-0-0-p-0-iso8859-1
+LiberationSans-Bold.pfa -liberation-liberation sans-bold-r-normal--0-0-0-0-p-0-iso8859-1
+LiberationSans-Italic.pfa -liberation-liberation sans-medium-i-normal--0-0-0-0-p-0-iso8859-1
+LiberationSans-BoldItalic.pfa -liberation-liberation sans-bold-i-normal--0-0-0-0-p-0-iso8859-1
+LiberationSerif-Regular.pfa -liberation-liberation serif-medium-r-normal--0-0-0-0-p-0-iso8859-1
+LiberationSerif-Bold.pfa -liberation-liberation serif-bold-r-normal--0-0-0-0-p-0-iso8859-1
+LiberationSerif-Italic.pfa -liberation-liberation serif-medium-i-normal--0-0-0-0-p-0-iso8859-1
+LiberationSerif-BoldItalic.pfa -liberation-liberation serif-bold-i-normal--0-0-0-0-p-0-iso8859-1
+SymbolsNerdFontMono.pfa -nerd-symbols nerd font mono-medium-r-normal--0-0-0-0-m-0-iso10646-1
+SymbolsNerdFontMono.pfa -nerd-symbols nerd font mono-medium-r-normal--0-0-0-0-m-0-iso8859-1
