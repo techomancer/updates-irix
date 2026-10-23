@@ -69,7 +69,7 @@ EOF
 chmod +x "$SCRIPT_DIR/build/guest_build.sh"
 
 echo "=== Executing tzdata build inside IRIX guest ==="
-"$IRIX_SH" --timeout 600 run "sh /shared/updates-irix/tzdata/build/guest_build.sh"
+"$TOP_DIR/guest_run.sh" --timeout 600 tzdata "sh /shared/updates-irix/tzdata/build/guest_build.sh"
 
 echo "========================================================="
 echo "   tzdata2026e modernization completed successfully!     "

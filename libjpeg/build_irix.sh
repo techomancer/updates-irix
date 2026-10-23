@@ -121,7 +121,7 @@ EOF
 chmod +x "$SCRIPT_DIR/build/guest_build.sh"
 
 echo "=== 4. Executing build inside IRIX guest ==="
-/home/dbehr/gits/iris/tools/irix-sh.py --timeout 900 run "sh /shared/updates-irix/libjpeg/build/guest_build.sh"
+"$TOP_DIR/guest_run.sh" --timeout 900 libjpeg "sh /shared/updates-irix/libjpeg/build/guest_build.sh"
 
 echo "=== 5. Running host ELF ABI comparison against original IRIX libraries ==="
 python3 "$TOP_DIR/irix_lib_audit.py" compare-tree "$SCRIPT_DIR/orig" "$SCRIPT_DIR/build"

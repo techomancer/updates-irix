@@ -9,14 +9,12 @@
 set -e
 
 ROOT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-IRIS_ROOT=$(CDPATH= cd -- "$ROOT_DIR/../.." && pwd)
-IRIX_SH="$IRIS_ROOT/tools/irix-sh.py"
-export IRIS_ROOT_PASSWORD="${IRIS_ROOT_PASSWORD:-}"
+export IRIS_ROOT_PASSWORD="${IRIS_ROOT_PASSWORD:-p00pp00p}"
 
 PROJ="${1:-zlib}"
 ACTION="${2:-all}"
 
-if [ ! -d "$ROOT_DIR/$PROJ" ]; then
+if [ "$PROJ" != "all" ] && [ ! -d "$ROOT_DIR/$PROJ" ]; then
     echo "Error: Unknown project directory '$ROOT_DIR/$PROJ'" >&2
     exit 1
 fi
@@ -74,8 +72,8 @@ run_build() {
         fi
     done
 
-    echo ">>> [$PROJ] Running MIPSpro guest build & test suite via $IRIX_SH..."
-    "$IRIX_SH" --timeout 600 run \
+    echo ">>> [$PROJ] Running MIPSpro guest build & test suite via guest_run.sh..."
+    "$ROOT_DIR/guest_run.sh" --timeout 600 "$PROJ" \
         "cp /shared/updates-irix/$PROJ/build_irix.sh /tmp/build_${PROJ}.sh && chmod a+x /tmp/build_${PROJ}.sh && /bin/sh /tmp/build_${PROJ}.sh 2>&1"
 }
 
@@ -95,6 +93,21 @@ run_audit() {
     echo ">>> [$PROJ] Running host ELF & ABI compatibility audit..."
     "$ROOT_DIR/irix_lib_audit.py" compare-tree "$ROOT_DIR/$PROJ/orig" "$ROOT_DIR/$PROJ/build"
 }
+
+build_all() {
+    local act="$1"
+    for p in zlib libjpeg libpng libtiff openssl-0.9.7 openssl-1.1.1 openssh tcsh terminfo tzdata fonts; do
+        echo "=========================================================="
+        echo ">>> Building project: $p (action: $act)"
+        echo "=========================================================="
+        "$ROOT_DIR/build.sh" "$p" "$act"
+    done
+}
+
+if [ "$PROJ" = "all" ]; then
+    build_all "$ACTION"
+    exit 0
+fi
 
 case "$ACTION" in
     build)

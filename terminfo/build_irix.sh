@@ -38,7 +38,7 @@ EOF
 chmod +x "$SCRIPT_DIR/build/guest_build.sh"
 
 echo "=== 2. Executing terminfo build & verification inside IRIX guest ==="
-"$IRIX_SH" --timeout 300 run "sh /shared/updates-irix/terminfo/build/guest_build.sh"
+"$TOP_DIR/guest_run.sh" --timeout 300 terminfo "sh /shared/updates-irix/terminfo/build/guest_build.sh"
 
 echo "========================================================="
 echo "   Terminfo modernization completed successfully!        "

@@ -49,7 +49,7 @@ EOF
 
 chmod +x "$SCRIPT_DIR/build/guest_build.sh"
 
-"$IRIX_SH" --timeout 600 run \
+"$TOP_DIR/guest_run.sh" --timeout 600 tcsh \
     "cp /shared/updates-irix/tcsh/build/guest_build.sh /tmp/guest_build_tcsh.sh && chmod a+x /tmp/guest_build_tcsh.sh && /bin/sh /tmp/guest_build_tcsh.sh 2>&1"
 
 echo ">>> tcsh 6.24.16 build complete: $SCRIPT_DIR/build/tcsh"

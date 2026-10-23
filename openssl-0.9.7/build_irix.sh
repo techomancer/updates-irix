@@ -9,7 +9,7 @@ echo "=== 1. Staging source tree & generating guest script ==="
 python3 "$SCRIPT_DIR/generate_build.py"
 
 echo "=== 2. Executing build inside IRIX guest ==="
-/home/dbehr/gits/iris/tools/irix-sh.py --timeout 2700 run "sh /shared/updates-irix/openssl-0.9.7/build/guest_build.sh"
+"$TOP_DIR/guest_run.sh" --timeout 2700 openssl-0.9.7 "sh /shared/updates-irix/openssl-0.9.7/build/guest_build.sh"
 
 echo "=== Creating symlinks on host ==="
 (cd "$SCRIPT_DIR/build" && ln -sf libcrypto.so.0.9.7 libcrypto.so.0 && ln -sf libcrypto.so.0 libcrypto.so)
