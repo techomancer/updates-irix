@@ -10,7 +10,7 @@ import shutil
 import subprocess
 import sys
 
-BASE_DIR = "/home/dbehr/gits/iris/shared/updates-irix"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 GUEST_SHARED = "/shared/updates-irix"
 DIST_DIR = os.path.join(BASE_DIR, "dist")
 ROOT_DIR = os.path.join(DIST_DIR, "root")
