@@ -39,8 +39,8 @@ def copy_file(src, dst):
 def run_guest_script(script_path):
     cmd = ["/home/dbehr/gits/iris/tools/irix-sh.py", "run", f"sh {script_path}"]
     env = dict(os.environ)
-    if "IRIS_ROOT_PASSWORD" not in env:
-        env["IRIS_ROOT_PASSWORD"] = os.environ.get("IRIS_ROOT_PASSWORD", "")
+    if "IRIS_ROOT_PASSWORD" not in env or not env["IRIS_ROOT_PASSWORD"]:
+        env["IRIS_ROOT_PASSWORD"] = "p00pp00p"
     res = subprocess.run(cmd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
     if res.returncode != 0:
         print(f"Error running guest script: {script_path}\nOutput: {res.stdout}\nError: {res.stderr}")
@@ -82,18 +82,9 @@ def main():
     TAG_SSH_SERVER = "patchSG002026_1_openssh_sw_server"
     TAG_EOE_BASE = "patchSG002026_1_eoe_sw_base"
     TAG_EOE_TERM = "patchSG002026_1_eoe_sw_termbase"
+    TAG_EOE_TCSH = "patchSG002026_1_eoe_sw_tcsh"
 
-    # 2.1 Existing IFL plugins (will be copied from guest /usr/lib by build_dist.sh)
-    guest_ifl_files = [
-        "usr/lib/libifl.so", "usr/lib/libiflJFIF.so", "usr/lib/libiflNITF.so",
-        "usr/lib/libiflPNG.so", "usr/lib/libiflSGI.so", "usr/lib/libiflTIFF.so",
-        "usr/lib32/libifl.so", "usr/lib32/libiflJFIF.so", "usr/lib32/libiflNITF.so",
-        "usr/lib32/libiflPNG.so", "usr/lib32/libiflSGI.so", "usr/lib32/libiflTIFF.so",
-    ]
-    for gf in guest_ifl_files:
-        add_idb("f", "0755", "root", "sys", gf, TAG_IFL, "needrqs")
-
-    # 2.2 Modernized O32 / N32 DSOs
+    # 2.1 Modernized O32 / N32 DSOs
     copy_file(os.path.join(BASE_DIR, "zlib/build/libz.so"), os.path.join(ROOT_DIR, "usr/lib/libz.so"))
     add_idb("f", "0755", "root", "sys", "usr/lib/libz.so", TAG_IFL, "needrqs")
     copy_file(os.path.join(BASE_DIR, "zlib/build/32/libz.so"), os.path.join(ROOT_DIR, "usr/lib32/libz.so"))
@@ -189,7 +180,7 @@ def main():
     copy_file(os.path.join(BASE_DIR, "openssl-1.1.1/build/32/openssl"), os.path.join(ROOT_DIR, "usr/bin/openssl"))
     add_idb("f", "0755", "root", "sys", "usr/bin/openssl", TAG_SSL_BASE, "tag(0x53534c31)")
 
-    add_idb("f", "0755", "root", "sys", "usr/bin/c_rehash", TAG_SSL_BASE)
+    copy_file(os.path.join(BASE_DIR, "openssl-1.1.1/openssl/apps/openssl.cnf"), os.path.join(ROOT_DIR, "usr/openssl/openssl.cnf"))
     add_idb("f", "0644", "root", "sys", "usr/openssl/openssl.cnf", TAG_SSL_BASE, "config(suggest)")
 
     print("=== Step 4: Staging OpenSSL 1.1.1 (openssl11_sw.lib32, lib64, dev) ===")
@@ -260,9 +251,7 @@ def main():
         copy_file(os.path.join(BASE_DIR, src), os.path.join(ROOT_DIR, dst))
         add_idb("f", "4711" if "keysign" in src else "0755", "root", "sys", dst, TAG_SSH_COMMON, "tag(0x53534832)")
 
-    add_idb("f", "0644", "root", "sys", "etc/openssh/irix.cap", TAG_SSH_COMMON, "config(suggest)")
-    add_idb("f", "0644", "root", "sys", "etc/openssh/irix.mac", TAG_SSH_COMMON, "config(suggest)")
-    add_idb("f", "0644", "root", "sys", "etc/openssh/ssh_prng_cmds", TAG_SSH_COMMON, "config(suggest)")
+
 
     ssh_servers = [
         ("openssh/build/sbin/sshd", "usr/sbin/sshd"),
@@ -357,7 +346,7 @@ def main():
     add_idb("f", "0755", "root", "sys", "usr/bin/zdump", TAG_EOE_BASE, "tag(0x545A4450)")
 
     copy_file(os.path.join(BASE_DIR, "tcsh/build/tcsh"), os.path.join(ROOT_DIR, "usr/bin/tcsh"))
-    add_idb("f", "0755", "root", "sys", "usr/bin/tcsh", TAG_EOE_BASE, "tag(0x54435348)")
+    add_idb("f", "0755", "root", "sys", "usr/bin/tcsh", TAG_EOE_TCSH, "tag(0x54435348)")
 
     tz_src_files = [
         "africa", "antarctica", "asia", "australasia", "backward", "etcetera", "europe", "factory",
@@ -430,10 +419,10 @@ def main():
     id "{PRODUCT_DESC}"
 
     image ifl_eoe_sw
-        id "Image Format Executable Software"
+        id "Image Format Executable Software (32-bit o32 & n32)"
         version {VERS_IFL}
         subsys c++ default patch
-            id "Modernized Media & Compression Shared Libraries (zlib, libpng, libtiff, libjpeg)"
+            id "Modernized 32-bit Shared Libraries (zlib, libpng, libtiff, libjpeg)"
             follows ifl_eoe.sw.c++ 1314000000 1319999999
             replaces patchSG0005734.ifl_eoe_sw.c++ 0 maxint
             replaces patchSG002026.ifl_eoe_sw.c++ 0 maxint
@@ -443,11 +432,11 @@ def main():
     endimage
 
     image ifl_eoe_sw64
-        id "Image Format Executable Software (64-bit)"
+        id "Image Format Executable Software (64-bit n64)"
         version {VERS_IFL}
         subsys c++ default patch
             id "Modernized 64-bit Media & Compression Libraries (n64)"
-            follows ifl_eoe.sw.c++ 1314000000 1319999999
+            follows eoe.sw64.lib 1280000000 1289999999
             replaces patchSG0005734.ifl_eoe_sw64.c++ 0 maxint
             replaces patchSG002026.ifl_eoe_sw64.c++ 0 maxint
             replaces {PRODUCT_NAME}.ifl_eoe_sw64.c++ 0 maxint
@@ -468,7 +457,7 @@ def main():
     endimage
 
     image openssl_sw
-        id "OpenSSL 0.9.7 Execution Environment (Patched)"
+        id "OpenSSL 0.9.7 Execution Environment (32-bit n32)"
         version {VERS_SSL}
         subsys lib32 default patch
             id "OpenSSL 0.9.7 n32 Modernized Shared & Static Libraries"
@@ -492,13 +481,14 @@ def main():
         id "OpenSSL 1.1.1 Modern Cryptographic Engine"
         version {VERS_SSL11}
         subsys lib32 default
-            id "OpenSSL 1.1.1w n32 Shared Libraries"
+            id "OpenSSL 1.1.1w n32 Shared Libraries (32-bit)"
             replaces patchSG002026.openssl11_sw.lib32 0 maxint
             replaces {PRODUCT_NAME}.openssl11_sw.lib32 0 maxint
             exp {TAG_SSL11_LIB32}
         endsubsys
-        subsys lib64 default
-            id "OpenSSL 1.1.1w 64-bit Shared Libraries"
+        subsys lib64 default patch
+            id "OpenSSL 1.1.1w 64-bit Shared Libraries (n64)"
+            follows eoe.sw64.lib 1280000000 1289999999
             replaces patchSG002026.openssl11_sw.lib64 0 maxint
             replaces {PRODUCT_NAME}.openssl11_sw.lib64 0 maxint
             exp {TAG_SSL11_LIB64}
@@ -556,6 +546,13 @@ def main():
             replaces {PRODUCT_NAME}.eoe_sw.base 0 maxint
             exp {TAG_EOE_BASE}
         endsubsys
+        subsys tcsh default patch
+            id "tcsh 6.24.16 Modern C Shell"
+            follows eoe.sw.base 1280000000 1289999999
+            replaces patchSG002026.eoe_sw.tcsh 0 maxint
+            replaces {PRODUCT_NAME}.eoe_sw.tcsh 0 maxint
+            exp {TAG_EOE_TCSH}
+        endsubsys
     endimage
 
     image x_eoe_sw
@@ -591,30 +588,6 @@ mkdir -p "$STAGE"
 
 echo "--- Copying staged tree to local XFS /tmp ---"
 cp -r /shared/updates-irix/dist/root/* "$STAGE/"
-
-echo "--- Copying existing guest plugins & configs ---"
-for f in \\
-    usr/lib/libifl.so usr/lib/libiflJFIF.so usr/lib/libiflNITF.so \\
-    usr/lib/libiflPNG.so usr/lib/libiflSGI.so usr/lib/libiflTIFF.so \\
-    usr/lib32/libifl.so usr/lib32/libiflJFIF.so usr/lib32/libiflNITF.so \\
-    usr/lib32/libiflPNG.so usr/lib32/libiflSGI.so usr/lib32/libiflTIFF.so \\
-    usr/bin/c_rehash
-do
-    if test -f "/$f"; then
-        cp "/$f" "$STAGE/$f"
-    fi
-done
-
-if test -d /usr/openssl; then
-    mkdir -p "$STAGE/usr/openssl"
-    cp -r /usr/openssl/* "$STAGE/usr/openssl/"
-fi
-
-for f in etc/openssh/irix.cap etc/openssh/irix.mac etc/openssh/ssh_prng_cmds; do
-    if test -f "/$f"; then
-        cp "/$f" "$STAGE/$f"
-    fi
-done
 
 echo "--- Stripping & tagging binaries on local XFS ---"
 cd "$STAGE"
