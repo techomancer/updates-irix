@@ -4,6 +4,7 @@ package_rollup.py - Package "Security Rollup 2026, the Year of the IRIX Desktop"
 into an SGI inst/swmgr compatible .tardist patch distribution (patchSG002026).
 """
 
+import gzip
 import os
 import shutil
 import subprocess
@@ -57,7 +58,11 @@ def main():
     for d in [
         "usr/bin", "usr/sbin", "usr/libexec", "usr/lib", "usr/lib32", "usr/lib64",
         "usr/include", "etc/openssh", "etc/init.d", "etc/config", "etc/rc2.d", "etc/rc0.d", "var/empty",
-        "usr/lib/X11/fonts/Type1", "usr/lib/DPS/AFM"
+        "usr/lib/X11/fonts/Type1", "usr/lib/DPS/AFM", "usr/lib/X11/fonts/misc", "usr/lib/locale/TZ",
+        "usr/share/lib/terminfo", "usr/share/tcsh", "usr/share/tcsh/examples", "etc/ssl/certs", "usr/local/ssl",
+        "usr/share/catman/u_man/cat1", "usr/share/catman/u_man/cat1/openssh", "usr/share/catman/u_man/cat1/openssl",
+        "usr/share/catman/p_man/cat5/openssh", "usr/share/catman/p_man/cat5/openssl",
+        "usr/share/catman/a_man/cat7/openssl", "usr/share/catman/a_man/cat8/openssh"
     ]:
         os.makedirs(os.path.join(ROOT_DIR, d), exist_ok=True)
 
@@ -83,6 +88,9 @@ def main():
     TAG_EOE_BASE = "patchSG002026_1_eoe_sw_base"
     TAG_EOE_TERM = "patchSG002026_1_eoe_sw_termbase"
     TAG_EOE_TCSH = "patchSG002026_1_eoe_sw_tcsh"
+    TAG_EOE_MAN_BASE = "patchSG002026_1_eoe_man_base"
+    TAG_SSH_MAN = "patchSG002026_1_openssh_man_manpages"
+    TAG_SSL_MAN = "patchSG002026_1_openssl_man_manpages"
 
     # 2.1 Modernized O32 / N32 DSOs
     copy_file(os.path.join(BASE_DIR, "zlib/build/libz.so"), os.path.join(ROOT_DIR, "usr/lib/libz.so"))
@@ -183,6 +191,15 @@ def main():
     copy_file(os.path.join(BASE_DIR, "openssl-1.1.1/openssl/apps/openssl.cnf"), os.path.join(ROOT_DIR, "usr/openssl/openssl.cnf"))
     add_idb("f", "0644", "root", "sys", "usr/openssl/openssl.cnf", TAG_SSL_BASE, "config(suggest)")
 
+    # OpenSSL Root CA Certificates Bundle & Symlinks
+    copy_file(os.path.join(BASE_DIR, "ssl/ca-certificates.crt"), os.path.join(ROOT_DIR, "etc/ssl/certs/ca-certificates.crt"))
+    add_idb("f", "0644", "root", "sys", "etc/ssl/certs/ca-certificates.crt", TAG_SSL_BASE, "config(suggest)")
+    add_idb("l", "0777", "root", "sys", "etc/ssl/cert.pem", TAG_SSL_BASE, "symval(certs/ca-certificates.crt)")
+    add_idb("l", "0777", "root", "sys", "usr/local/ssl/cert.pem", TAG_SSL_BASE, "symval(/etc/ssl/certs/ca-certificates.crt)")
+    add_idb("l", "0777", "root", "sys", "usr/local/ssl/certs", TAG_SSL_BASE, "symval(/etc/ssl/certs)")
+    add_idb("l", "0777", "root", "sys", "usr/share/ssl/cert.pem", TAG_SSL_BASE, "symval(/etc/ssl/certs/ca-certificates.crt)")
+    add_idb("l", "0777", "root", "sys", "usr/openssl/cert.pem", TAG_SSL_BASE, "symval(/etc/ssl/certs/ca-certificates.crt)")
+
     print("=== Step 4: Staging OpenSSL 1.1.1 (openssl11_sw.lib32, lib64, dev) ===")
     copy_file(os.path.join(BASE_DIR, "openssl-1.1.1/build/32/libcrypto.so.1.1"), os.path.join(ROOT_DIR, "usr/lib32/libcrypto.so.1.1"))
     add_idb("f", "0755", "root", "sys", "usr/lib32/libcrypto.so.1.1", TAG_SSL11_LIB32, "needrqs")
@@ -282,6 +299,9 @@ def main():
                 "Subsystem sftp /usr/libexec/sftp-server\n")
     add_idb("f", "0600", "root", "sys", "etc/openssh/sshd_config", TAG_SSH_SERVER, "config(suggest)")
 
+    copy_file(os.path.join(BASE_DIR, "openssh/openssh/moduli"), os.path.join(ROOT_DIR, "etc/openssh/moduli"))
+    add_idb("f", "0644", "root", "sys", "etc/openssh/moduli", TAG_SSH_SERVER, "config(suggest)")
+
     with open(os.path.join(ROOT_DIR, "etc/init.d/sshd"), "w") as f:
         f.write("#! /sbin/sh\n"
                 "# OpenSSH sshd startup script for IRIX (Security Rollup 2026)\n"
@@ -348,6 +368,21 @@ def main():
     copy_file(os.path.join(BASE_DIR, "tcsh/build/tcsh"), os.path.join(ROOT_DIR, "usr/bin/tcsh"))
     add_idb("f", "0755", "root", "sys", "usr/bin/tcsh", TAG_EOE_TCSH, "tag(0x54435348)")
 
+    copy_file(os.path.join(BASE_DIR, "tcsh/tcsh/complete.tcsh"), os.path.join(ROOT_DIR, "usr/share/tcsh/complete.tcsh"))
+    add_idb("f", "0644", "root", "sys", "usr/share/tcsh/complete.tcsh", TAG_EOE_TCSH)
+
+    copy_file(os.path.join(BASE_DIR, "tcsh/tcsh/dot.tcshrc"), os.path.join(ROOT_DIR, "usr/share/tcsh/examples/dot.tcshrc"))
+    add_idb("f", "0644", "root", "sys", "usr/share/tcsh/examples/dot.tcshrc", TAG_EOE_TCSH)
+    copy_file(os.path.join(BASE_DIR, "tcsh/tcsh/dot.login"), os.path.join(ROOT_DIR, "usr/share/tcsh/examples/dot.login"))
+    add_idb("f", "0644", "root", "sys", "usr/share/tcsh/examples/dot.login", TAG_EOE_TCSH)
+
+    with open(os.path.join(ROOT_DIR, "etc/csh.cshrc"), "w") as f:
+        f.write("# /etc/csh.cshrc - System-wide settings for modern tcsh (Security Rollup 2026)\n"
+                "if ( -f /usr/share/tcsh/complete.tcsh && $?prompt ) then\n"
+                "    source /usr/share/tcsh/complete.tcsh\n"
+                "endif\n")
+    add_idb("f", "0644", "root", "sys", "etc/csh.cshrc", TAG_EOE_TCSH, "config(suggest)")
+
     tz_src_files = [
         "africa", "antarctica", "asia", "australasia", "backward", "etcetera", "europe", "factory",
         "northamerica", "southamerica", "iso3166.tab", "zone.tab", "zone1970.tab", "zonenow.tab", "leapseconds"
@@ -407,7 +442,103 @@ def main():
     font_removeop = 'removeop("sh $rbase/usr/lib/X11/fonts/Type1/.fonts_rollup.sh remove")'
     add_idb("f", "0644", "root", "sys", "usr/lib/X11/fonts/Type1/.fonts.scale.rollup2026", TAG_XFONTS, f"{font_exitop} {font_removeop}")
 
-    print("=== Step 9: Generating Spec and IDB ===")
+    print("=== Step 9: Staging Formatted Manual Pages (eoe_man, openssh_man, openssl_man) ===")
+    def format_man_page(src_file, dst_gz, is_pod=False, section=1, center="Manual", release="", substitutions=None):
+        os.makedirs(os.path.dirname(dst_gz), exist_ok=True)
+        if is_pod:
+            cmd_pod = ["pod2man", f"--section={section}", f"--center={center}"]
+            if release:
+                cmd_pod.append(f"--release={release}")
+            cmd_pod.append(src_file)
+            p_pod = subprocess.Popen(cmd_pod, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+            p_groff = subprocess.Popen(["groff", "-t", "-e", "-mandoc", "-Tascii", "-P-c"],
+                                       stdin=p_pod.stdout, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+            p_pod.stdout.close()
+            out, _ = p_groff.communicate()
+        else:
+            with open(src_file, "r", encoding="utf-8", errors="replace") as f:
+                content = f.read()
+            if substitutions:
+                for k, v in substitutions.items():
+                    content = content.replace(k, v)
+            p_groff = subprocess.Popen(["groff", "-t", "-e", "-mandoc", "-Tascii", "-P-c"],
+                                       stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+            out, _ = p_groff.communicate(input=content.encode("utf-8"))
+        with gzip.open(dst_gz, "wb", compresslevel=9) as gz:
+            gz.write(out)
+
+    # 9.1 tcsh man page
+    tcsh_sub = {
+        "@PACKAGE_ENGLISH_DATE@": "April 12, 2024",
+        "@PACKAGE_ORIGIN@": "Astron",
+        "@PACKAGE_VERSION@": "6.24.16",
+        "@PACKAGE_DATE@": "2024-04-12",
+        "@PACKAGE_BUGREPORT@": "https://bugs.astron.com/",
+        "@PACKAGE_MAILLIST@": "https://mailman.astron.com/mailman/listinfo/tcsh"
+    }
+    tcsh_dst = os.path.join(ROOT_DIR, "usr/share/catman/u_man/cat1/tcsh.z")
+    format_man_page(os.path.join(BASE_DIR, "tcsh/tcsh/tcsh.man.in"), tcsh_dst, substitutions=tcsh_sub)
+    add_idb("f", "0644", "root", "sys", "usr/share/catman/u_man/cat1/tcsh.z", TAG_EOE_MAN_BASE)
+
+    # 9.2 OpenSSH man pages
+    ssh_man_files = [
+        ("ssh.1", "u_man/cat1/openssh", "ssh.z"),
+        ("scp.1", "u_man/cat1/openssh", "scp.z"),
+        ("sftp.1", "u_man/cat1/openssh", "sftp.z"),
+        ("ssh-add.1", "u_man/cat1/openssh", "ssh-add.z"),
+        ("ssh-agent.1", "u_man/cat1/openssh", "ssh-agent.z"),
+        ("ssh-keygen.1", "u_man/cat1/openssh", "ssh-keygen.z"),
+        ("ssh-keyscan.1", "u_man/cat1/openssh", "ssh-keyscan.z"),
+        ("ssh_config.5", "p_man/cat5/openssh", "ssh_config.z"),
+        ("sshd_config.5", "p_man/cat5/openssh", "sshd_config.z"),
+        ("moduli.5", "p_man/cat5/openssh", "moduli.z"),
+        ("sshd.8", "a_man/cat8/openssh", "sshd.z"),
+        ("sftp-server.8", "a_man/cat8/openssh", "sftp-server.z"),
+        ("ssh-keysign.8", "a_man/cat8/openssh", "ssh-keysign.z"),
+        ("ssh-pkcs11-helper.8", "a_man/cat8/openssh", "ssh-pkcs11-helper.z"),
+        ("ssh-sk-helper.8", "a_man/cat8/openssh", "ssh-sk-helper.z"),
+    ]
+    for src, sdir, dst in ssh_man_files:
+        src_path = os.path.join(BASE_DIR, f"openssh/openssh/{src}")
+        dst_path = os.path.join(ROOT_DIR, f"usr/share/catman/{sdir}/{dst}")
+        format_man_page(src_path, dst_path)
+        add_idb("f", "0644", "root", "sys", f"usr/share/catman/{sdir}/{dst}", TAG_SSH_MAN)
+
+    add_idb("l", "0777", "root", "sys", "usr/share/catman/u_man/cat1/openssh/slogin.z", TAG_SSH_MAN, "symval(ssh.z)")
+
+    # 9.3 OpenSSL man pages
+    ssl_doc_dir = os.path.join(BASE_DIR, "openssl-1.1.1/openssl/doc")
+    for f in sorted(os.listdir(os.path.join(ssl_doc_dir, "man1"))):
+        if f.endswith(".pod"):
+            base = f[:-4]
+            src_path = os.path.join(ssl_doc_dir, f"man1/{f}")
+            dst_path = os.path.join(ROOT_DIR, f"usr/share/catman/u_man/cat1/openssl/{base}.z")
+            format_man_page(src_path, dst_path, is_pod=True, section=1, center="OpenSSL", release="1.1.1w")
+            add_idb("f", "0644", "root", "sys", f"usr/share/catman/u_man/cat1/openssl/{base}.z", TAG_SSL_MAN)
+
+    for dgst in ["md2", "md4", "md5", "mdc2", "ripemd160", "sha", "sha1", "sha224", "sha256", "sha384", "sha512"]:
+        add_idb("l", "0777", "root", "sys", f"usr/share/catman/u_man/cat1/openssl/{dgst}.z", TAG_SSL_MAN, "symval(dgst.z)")
+
+    for f in sorted(os.listdir(os.path.join(ssl_doc_dir, "man5"))):
+        if f.endswith(".pod"):
+            base = f[:-4]
+            src_path = os.path.join(ssl_doc_dir, f"man5/{f}")
+            dst_path = os.path.join(ROOT_DIR, f"usr/share/catman/p_man/cat5/openssl/{base}.z")
+            format_man_page(src_path, dst_path, is_pod=True, section=5, center="OpenSSL", release="1.1.1w")
+            add_idb("f", "0644", "root", "sys", f"usr/share/catman/p_man/cat5/openssl/{base}.z", TAG_SSL_MAN)
+
+    for f in sorted(os.listdir(os.path.join(ssl_doc_dir, "man7"))):
+        if f.endswith(".pod"):
+            base = f[:-4]
+            src_path = os.path.join(ssl_doc_dir, f"man7/{f}")
+            dst_path = os.path.join(ROOT_DIR, f"usr/share/catman/a_man/cat7/openssl/{base}.z")
+            format_man_page(src_path, dst_path, is_pod=True, section=7, center="OpenSSL", release="1.1.1w")
+            add_idb("f", "0644", "root", "sys", f"usr/share/catman/a_man/cat7/openssl/{base}.z", TAG_SSL_MAN)
+
+    for a in ["DES", "Modes", "of"]:
+        add_idb("l", "0777", "root", "sys", f"usr/share/catman/a_man/cat7/openssl/{a}.z", TAG_SSL_MAN, "symval(des_modes.z)")
+
+    print("=== Step 10: Generating Spec and IDB ===")
     idb_entries.sort(key=lambda x: (x[0], x[1]))
     idb_path = os.path.join(DIST_DIR, f"{PRODUCT_NAME}.idb")
     with open(idb_path, "w") as f:
@@ -567,6 +698,42 @@ def main():
             exp {TAG_XFONTS}
         endsubsys
     endimage
+
+    image eoe_man
+        id "IRIX Execution Environment Online Manual Pages"
+        version {VERS_EOE}
+        subsys base default patch
+            id "tcsh 6.24.16 Modern C Shell Man Page"
+            follows eoe.man.base 1280000000 1289999999
+            replaces patchSG002026.eoe_man.base 0 maxint
+            replaces {PRODUCT_NAME}.eoe_man.base 0 maxint
+            exp {TAG_EOE_MAN_BASE}
+        endsubsys
+    endimage
+
+    image openssh_man
+        id "OpenSSH Online Manual Pages"
+        version {VERS_SSH}
+        subsys manpages default patch
+            id "OpenSSH 9.9p2 Manual Pages"
+            follows openssh.man.manpages 1270000000 1279999999
+            replaces patchSG002026.openssh_man.manpages 0 maxint
+            replaces {PRODUCT_NAME}.openssh_man.manpages 0 maxint
+            exp {TAG_SSH_MAN}
+        endsubsys
+    endimage
+
+    image openssl_man
+        id "OpenSSL Online Manual Pages"
+        version {VERS_SSL}
+        subsys manpages default patch
+            id "OpenSSL 1.1.1w Manual Pages"
+            follows openssl.man.manpages 1270000000 1279999999
+            replaces patchSG002026.openssl_man.manpages 0 maxint
+            replaces {PRODUCT_NAME}.openssl_man.manpages 0 maxint
+            exp {TAG_SSL_MAN}
+        endsubsys
+    endimage
 endproduct
 """
     spec_path = os.path.join(DIST_DIR, f"{PRODUCT_NAME}.spec")
@@ -574,7 +741,7 @@ endproduct
         f.write(spec_content)
     print(f"Wrote spec to {spec_path}")
 
-    print("=== Step 10: Generating build_dist.sh for Guest execution ===")
+    print("=== Step 11: Generating build_dist.sh for Guest execution ===")
     build_script_path = os.path.join(DIST_DIR, "build_dist.sh")
     with open(build_script_path, "w") as f:
         f.write(f"""#!/bin/sh
@@ -633,7 +800,7 @@ echo "TARDIST_BUILD_SUCCESS"
 """)
     os.chmod(build_script_path, 0o755)
 
-    print("=== Step 11: Executing build_dist.sh in Guest ===")
+    print("=== Step 12: Executing build_dist.sh in Guest ===")
     out = run_guest_script(f"{GUEST_SHARED}/dist/build_dist.sh")
     print(out)
 
