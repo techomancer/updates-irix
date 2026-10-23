@@ -12,7 +12,11 @@ import sys
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 GUEST_SHARED = "/shared/updates-irix"
-DIST_DIR = os.path.join(BASE_DIR, "dist")
+GUEST_SHARED_HOST = os.path.join(BASE_DIR, "guest/shared")
+if os.path.isdir(GUEST_SHARED_HOST):
+    DIST_DIR = os.path.join(GUEST_SHARED_HOST, "updates-irix/dist")
+else:
+    DIST_DIR = os.path.join(BASE_DIR, "dist")
 ROOT_DIR = os.path.join(DIST_DIR, "root")
 OUT_DIR = os.path.join(DIST_DIR, "out")
 
@@ -803,6 +807,10 @@ echo "TARDIST_BUILD_SUCCESS"
     print("=== Step 12: Executing build_dist.sh in Guest ===")
     out = run_guest_script(f"{GUEST_SHARED}/dist/build_dist.sh")
     print(out)
+
+    guest_tardist = os.path.join(GUEST_SHARED_HOST, f"updates-irix/{PRODUCT_NAME}.tardist")
+    if os.path.exists(guest_tardist):
+        shutil.copy2(guest_tardist, os.path.join(BASE_DIR, f"{PRODUCT_NAME}.tardist"))
 
     links = [
         os.path.join(BASE_DIR, "security_rollup_2026-beta1.tardist"),
