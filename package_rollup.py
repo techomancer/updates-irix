@@ -20,8 +20,8 @@ else:
 ROOT_DIR = os.path.join(DIST_DIR, "root")
 OUT_DIR = os.path.join(DIST_DIR, "out")
 
-PRODUCT_NAME = "patchSG002026-1"
-PRODUCT_DESC = "Security Rollup 2026 for SGI IRIX 6.5 (Beta 1)"
+PRODUCT_NAME = "patchSG002026-2"
+PRODUCT_DESC = "Security Rollup 2026 for SGI IRIX 6.5 (Beta 2)"
 
 # Subsystems and their versions
 VERS_IFL = 1319999926
@@ -78,23 +78,24 @@ def main():
         idb_entries.append((path, f"{ftype} {mode} {owner} {group} {path} {src_path} {exp_tag}{attr_str}"))
 
     print("=== Step 2: Staging Media & Compression Libraries ===")
-    TAG_IFL = "patchSG002026_1_ifl_eoe_sw_c"
-    TAG_IFL64 = "patchSG002026_1_ifl_eoe_sw64_c"
-    TAG_IFLDEV = "patchSG002026_1_ifl_dev_sw_c"
-    TAG_SSL_LIB32 = "patchSG002026_1_openssl_sw_lib32"
-    TAG_SSL_BASE = "patchSG002026_1_openssl_sw_base"
-    TAG_SSL11_LIB32 = "patchSG002026_1_openssl11_sw_lib32"
-    TAG_SSL11_LIB64 = "patchSG002026_1_openssl11_sw_lib64"
-    TAG_SSL11_DEV = "patchSG002026_1_openssl11_sw_dev"
-    TAG_SSH_CLIENT = "patchSG002026_1_openssh_sw_client"
-    TAG_SSH_COMMON = "patchSG002026_1_openssh_sw_common"
-    TAG_SSH_SERVER = "patchSG002026_1_openssh_sw_server"
-    TAG_EOE_BASE = "patchSG002026_1_eoe_sw_base"
-    TAG_EOE_TERM = "patchSG002026_1_eoe_sw_termbase"
-    TAG_EOE_TCSH = "patchSG002026_1_eoe_sw_tcsh"
-    TAG_EOE_MAN_BASE = "patchSG002026_1_eoe_man_base"
-    TAG_SSH_MAN = "patchSG002026_1_openssh_man_manpages"
-    TAG_SSL_MAN = "patchSG002026_1_openssl_man_manpages"
+    P_PREFIX = PRODUCT_NAME.replace("-", "_")
+    TAG_IFL = f"{P_PREFIX}_ifl_eoe_sw_c"
+    TAG_IFL64 = f"{P_PREFIX}_ifl_eoe_sw64_c"
+    TAG_IFLDEV = f"{P_PREFIX}_ifl_dev_sw_c"
+    TAG_SSL_LIB32 = f"{P_PREFIX}_openssl_sw_lib32"
+    TAG_SSL_BASE = f"{P_PREFIX}_openssl_sw_base"
+    TAG_SSL11_LIB32 = f"{P_PREFIX}_openssl11_sw_lib32"
+    TAG_SSL11_LIB64 = f"{P_PREFIX}_openssl11_sw_lib64"
+    TAG_SSL11_DEV = f"{P_PREFIX}_openssl11_sw_dev"
+    TAG_SSH_CLIENT = f"{P_PREFIX}_openssh_sw_client"
+    TAG_SSH_COMMON = f"{P_PREFIX}_openssh_sw_common"
+    TAG_SSH_SERVER = f"{P_PREFIX}_openssh_sw_server"
+    TAG_EOE_BASE = f"{P_PREFIX}_eoe_sw_base"
+    TAG_EOE_TERM = f"{P_PREFIX}_eoe_sw_termbase"
+    TAG_EOE_TCSH = f"{P_PREFIX}_eoe_sw_tcsh"
+    TAG_EOE_MAN_BASE = f"{P_PREFIX}_eoe_man_base"
+    TAG_SSH_MAN = f"{P_PREFIX}_openssh_man_manpages"
+    TAG_SSL_MAN = f"{P_PREFIX}_openssl_man_manpages"
 
     # 2.1 Modernized O32 / N32 DSOs
     copy_file(os.path.join(BASE_DIR, "zlib/build/libz.so"), os.path.join(ROOT_DIR, "usr/lib/libz.so"))
@@ -401,7 +402,7 @@ def main():
             add_idb("f", "0644", "root", "sys", f"usr/lib/locale/TZ/{z}", TAG_EOE_BASE)
 
     print("=== Step 8: Staging Modern Type 1 Fonts and DPS Metrics (x_eoe_sw.Xfonts) ===")
-    TAG_XFONTS = "patchSG002026_1_x_eoe_sw_Xfonts"
+    TAG_XFONTS = f"{P_PREFIX}_x_eoe_sw_Xfonts"
 
     # Ensure fonts are converted
     subprocess.run([sys.executable, os.path.join(BASE_DIR, "fonts/convert_fonts.py")], check=True)
@@ -561,6 +562,8 @@ def main():
             follows ifl_eoe.sw.c++ 1314000000 1319999999
             replaces patchSG0005734.ifl_eoe_sw.c++ 0 maxint
             replaces patchSG002026.ifl_eoe_sw.c++ 0 maxint
+            replaces patchSG002026-1.ifl_eoe_sw.c++ 0 maxint
+            replaces patchSG002026-1.ifl_eoe_sw.c++ 0 maxint
             replaces {PRODUCT_NAME}.ifl_eoe_sw.c++ 0 maxint
             exp {TAG_IFL}
         endsubsys
@@ -574,6 +577,7 @@ def main():
             follows eoe.sw64.lib 1280000000 1289999999
             replaces patchSG0005734.ifl_eoe_sw64.c++ 0 maxint
             replaces patchSG002026.ifl_eoe_sw64.c++ 0 maxint
+            replaces patchSG002026-1.ifl_eoe_sw64.c++ 0 maxint
             replaces {PRODUCT_NAME}.ifl_eoe_sw64.c++ 0 maxint
             exp {TAG_IFL64}
         endsubsys
@@ -586,6 +590,7 @@ def main():
             id "Modernized Media & Compression Headers and Archives"
             follows ifl_dev.sw.c++ 1314000000 1319999999
             replaces patchSG002026.ifl_dev_sw.c++ 0 maxint
+            replaces patchSG002026-1.ifl_dev_sw.c++ 0 maxint
             replaces {PRODUCT_NAME}.ifl_dev_sw.c++ 0 maxint
             exp {TAG_IFLDEV}
         endsubsys
@@ -599,6 +604,7 @@ def main():
             follows openssl.sw.lib32 1270000000 1279999999
             replaces patchSG0005533.openssl_sw.lib32 0 maxint
             replaces patchSG002026.openssl_sw.lib32 0 maxint
+            replaces patchSG002026-1.openssl_sw.lib32 0 maxint
             replaces {PRODUCT_NAME}.openssl_sw.lib32 0 maxint
             exp {TAG_SSL_LIB32}
         endsubsys
@@ -607,6 +613,7 @@ def main():
             follows openssl.sw.base 1270000000 1279999999
             replaces patchSG0005533.openssl_sw.base 0 maxint
             replaces patchSG002026.openssl_sw.base 0 maxint
+            replaces patchSG002026-1.openssl_sw.base 0 maxint
             replaces {PRODUCT_NAME}.openssl_sw.base 0 maxint
             exp {TAG_SSL_BASE}
         endsubsys
@@ -618,6 +625,7 @@ def main():
         subsys lib32 default
             id "OpenSSL 1.1.1w n32 Shared Libraries (32-bit)"
             replaces patchSG002026.openssl11_sw.lib32 0 maxint
+            replaces patchSG002026-1.openssl11_sw.lib32 0 maxint
             replaces {PRODUCT_NAME}.openssl11_sw.lib32 0 maxint
             exp {TAG_SSL11_LIB32}
         endsubsys
@@ -625,12 +633,14 @@ def main():
             id "OpenSSL 1.1.1w 64-bit Shared Libraries (n64)"
             follows eoe.sw64.lib 1280000000 1289999999
             replaces patchSG002026.openssl11_sw.lib64 0 maxint
+            replaces patchSG002026-1.openssl11_sw.lib64 0 maxint
             replaces {PRODUCT_NAME}.openssl11_sw.lib64 0 maxint
             exp {TAG_SSL11_LIB64}
         endsubsys
         subsys dev default
             id "OpenSSL 1.1.1w Development Headers and CLI"
             replaces patchSG002026.openssl11_sw.dev 0 maxint
+            replaces patchSG002026-1.openssl11_sw.dev 0 maxint
             replaces {PRODUCT_NAME}.openssl11_sw.dev 0 maxint
             exp {TAG_SSL11_DEV}
         endsubsys
@@ -643,6 +653,7 @@ def main():
             id "OpenSSH 9.9p2 Client Utilities"
             follows openssh.sw.client 1270000000 1279999999
             replaces patchSG002026.openssh_sw.client 0 maxint
+            replaces patchSG002026-1.openssh_sw.client 0 maxint
             replaces {PRODUCT_NAME}.openssh_sw.client 0 maxint
             exp {TAG_SSH_CLIENT}
         endsubsys
@@ -650,6 +661,7 @@ def main():
             id "OpenSSH 9.9p2 Common Key and Configuration Tools"
             follows openssh.sw.common 1270000000 1279999999
             replaces patchSG002026.openssh_sw.common 0 maxint
+            replaces patchSG002026-1.openssh_sw.common 0 maxint
             replaces {PRODUCT_NAME}.openssh_sw.common 0 maxint
             exp {TAG_SSH_COMMON}
         endsubsys
@@ -658,6 +670,7 @@ def main():
             follows openssh.sw.common 1270000000 1279999999
             replaces openssh.sw.server 0 maxint
             replaces patchSG002026.openssh_sw.server 0 maxint
+            replaces patchSG002026-1.openssh_sw.server 0 maxint
             replaces {PRODUCT_NAME}.openssh_sw.server 0 maxint
             exp {TAG_SSH_SERVER}
         endsubsys
@@ -670,6 +683,7 @@ def main():
             id "Modernized Terminal Database (256-color & modern terminal profiles)"
             follows eoe.sw.termbase 1280000000 1289999999
             replaces patchSG002026.eoe_sw.termbase 0 maxint
+            replaces patchSG002026-1.eoe_sw.termbase 0 maxint
             replaces {PRODUCT_NAME}.eoe_sw.termbase 0 maxint
             exp {TAG_EOE_TERM}
         endsubsys
@@ -678,6 +692,7 @@ def main():
             follows eoe.sw.base 1280000000 1289999999
             replaces patchSG0007204.eoe_sw.base 0 maxint
             replaces patchSG002026.eoe_sw.base 0 maxint
+            replaces patchSG002026-1.eoe_sw.base 0 maxint
             replaces {PRODUCT_NAME}.eoe_sw.base 0 maxint
             exp {TAG_EOE_BASE}
         endsubsys
@@ -685,6 +700,7 @@ def main():
             id "tcsh 6.24.16 Modern C Shell"
             follows eoe.sw.base 1280000000 1289999999
             replaces patchSG002026.eoe_sw.tcsh 0 maxint
+            replaces patchSG002026-1.eoe_sw.tcsh 0 maxint
             replaces {PRODUCT_NAME}.eoe_sw.tcsh 0 maxint
             exp {TAG_EOE_TCSH}
         endsubsys
@@ -698,6 +714,7 @@ def main():
             follows x_eoe.sw.Xfonts 1280000000 1289999999
             replaces patchSG0005785.x_eoe_sw.Xfonts 0 maxint
             replaces patchSG002026.x_eoe_sw.Xfonts 0 maxint
+            replaces patchSG002026-1.x_eoe_sw.Xfonts 0 maxint
             replaces {PRODUCT_NAME}.x_eoe_sw.Xfonts 0 maxint
             exp {TAG_XFONTS}
         endsubsys
@@ -710,6 +727,7 @@ def main():
             id "tcsh 6.24.16 Modern C Shell Man Page"
             follows eoe.man.base 1280000000 1289999999
             replaces patchSG002026.eoe_man.base 0 maxint
+            replaces patchSG002026-1.eoe_man.base 0 maxint
             replaces {PRODUCT_NAME}.eoe_man.base 0 maxint
             exp {TAG_EOE_MAN_BASE}
         endsubsys
@@ -722,6 +740,7 @@ def main():
             id "OpenSSH 9.9p2 Manual Pages"
             follows openssh.man.manpages 1270000000 1279999999
             replaces patchSG002026.openssh_man.manpages 0 maxint
+            replaces patchSG002026-1.openssh_man.manpages 0 maxint
             replaces {PRODUCT_NAME}.openssh_man.manpages 0 maxint
             exp {TAG_SSH_MAN}
         endsubsys
@@ -734,6 +753,7 @@ def main():
             id "OpenSSL 1.1.1w Manual Pages"
             follows openssl.man.manpages 1270000000 1279999999
             replaces patchSG002026.openssl_man.manpages 0 maxint
+            replaces patchSG002026-1.openssl_man.manpages 0 maxint
             replaces {PRODUCT_NAME}.openssl_man.manpages 0 maxint
             exp {TAG_SSL_MAN}
         endsubsys
@@ -813,7 +833,7 @@ echo "TARDIST_BUILD_SUCCESS"
         shutil.copy2(guest_tardist, os.path.join(BASE_DIR, f"{PRODUCT_NAME}.tardist"))
 
     links = [
-        os.path.join(BASE_DIR, "security_rollup_2026-beta1.tardist"),
+        os.path.join(BASE_DIR, "security_rollup_2026-beta2.tardist"),
         os.path.join(BASE_DIR, "security_rollup_2026.tardist"),
         os.path.join(BASE_DIR, "patchSG002026.tardist"),
     ]
