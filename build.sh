@@ -52,6 +52,10 @@ run_build() {
         python3 "$ROOT_DIR/fonts/convert_fonts.py"
         return
     fi
+    if [ "$PROJ" = "ssl" ]; then
+        "$ROOT_DIR/ssl/update_certs.sh"
+        return
+    fi
 
     echo ">>> [$PROJ] Preparing patched source tree on host..."
     rm -rf "$ROOT_DIR/$PROJ/build"
@@ -88,6 +92,12 @@ run_audit() {
         echo ">>> [fonts] Verifying converted Type 1 fonts..."
         test -f "$ROOT_DIR/fonts/fonts.scale.rollup" && test -f "$ROOT_DIR/fonts/fonts.alias.rollup"
         echo ">>> [fonts] 26 Type 1 PFA fonts, 30 XLFD scales, 23 aliases verified."
+        return
+    fi
+    if [ "$PROJ" = "ssl" ]; then
+        echo ">>> [ssl] Verifying CA certificates bundle..."
+        test -s "$ROOT_DIR/ssl/ca-certificates.crt"
+        echo ">>> [ssl] CA certificates bundle verified."
         return
     fi
     echo ">>> [$PROJ] Running host ELF & ABI compatibility audit..."
